@@ -254,7 +254,11 @@ class ReviewReport:
     result: AgentResult
 
     def to_markdown(self) -> str:
-        """Render the review result as a Markdown report."""
+        """Render the review result as a concise Markdown report.
+
+        Critical/High findings are shown in full. Medium are listed by title.
+        Low are summarized as a count. Full details are in a collapsed section.
+        """
         lines = [
             "# RevHive Review Report\n",
             "## 📊 Overview\n",
@@ -262,14 +266,15 @@ class ReviewReport:
             f"\n**Total Findings:** {len(self.result.findings)}\n",
         ]
 
-        categories = {}
-        for f in self.result.findings:
-            categories.setdefault(f.agent, []).append(f)
+        critical_high = [f for f in self.result.findings if f.severity.value in ("critical", "high")]
+        medium = [f for f in self.result.findings if f.severity.value == "medium"]
+        low = [f for f in self.result.findings if f.severity.value == "low"]
 
-        for agent, findings in categories.items():
-            lines.append(f"\n## {agent} ({len(findings)} issues)\n")
-            for f in findings:
-                emoji = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🟢"}.get(f.severity.value, "⚪")
+        # Critical & High — full detail
+        if critical_high:
+            lines.append("\n## ⚠️ Critical & High Findings\n")
+            for f in critical_high:
+                emoji = "🔴" if f.severity.value == "critical" else "🟠"
                 lines.append(f"### {emoji} [{f.severity.value.upper()}] {f.title}")
                 if f.line_number is not None:
                     lines.append(f"**Line:** {f.line_number}")
@@ -277,6 +282,38 @@ class ReviewReport:
                 if f.suggestion:
                     lines.append(f"\n**Suggestion:** {f.suggestion}")
                 lines.append("")
+
+        # Medium — title only
+        if medium:
+            lines.append(f"\n## 🟡 Medium ({len(medium)})\n")
+            for f in medium:
+                loc = f" (`{f.file_path}:{f.line_number}`)" if f.file_path and f.line_number else ""
+                lines.append(f"- {f.title}{loc}")
+
+        # Low — count only
+        if low:
+            lines.append(f"\n## 🟢 Low ({len(low)})\n")
+            lines.append(f"{len(low)} low-severity issues found. Expand below for details.\n")
+
+        # Full details in collapsed section
+        all_findings = self.result.findings
+        if all_findings:
+            lines.append("\n<details><summary>📋 Full Findings Detail</summary>\n")
+            categories: dict[str, list] = {}
+            for f in all_findings:
+                categories.setdefault(f.agent, []).append(f)
+            for agent, findings in categories.items():
+                lines.append(f"\n### {agent} ({len(findings)} issues)\n")
+                for f in findings:
+                    emoji = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "🟢"}.get(f.severity.value, "⚪")
+                    lines.append(f"#### {emoji} [{f.severity.value.upper()}] {f.title}")
+                    if f.line_number is not None:
+                        lines.append(f"**Line:** {f.line_number}")
+                    lines.append(f"\n{f.description}")
+                    if f.suggestion:
+                        lines.append(f"\n**Suggestion:** {f.suggestion}")
+                    lines.append("")
+            lines.append("</details>")
 
         return "\n".join(lines)
 

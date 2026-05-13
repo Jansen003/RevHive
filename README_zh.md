@@ -289,7 +289,3 @@ bandit -r src/ -ll --skip B101
 ## License
 
 BSL 1.1 — 详见 [LICENSE](LICENSE)。2030-05-12 自动转为 Apache 2.0。
-
-
-
-

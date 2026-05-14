@@ -152,6 +152,10 @@ class BaseReviewAgent(ABC):
             )
 
         findings = self._parse_findings(response.content)
+        # Fill in file_path from method parameter if LLM didn't provide it
+        for f in findings:
+            if not f.file_path and file_path:
+                f.file_path = file_path
         return AgentResult(
             agent_name=self.name,
             findings=findings,

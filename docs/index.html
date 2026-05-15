@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RevHive — Your PR, Reviewed by 10 AI Agents</title>
-  <meta name="description" content="RevHive turns your LLM key into a 10-agent code review team. Security, performance, logic, and more — reviewed in parallel on every PR.">
+  <title>RevHive — Your PR, Reviewed by 9 AI Agents</title>
+  <meta name="description" content="RevHive turns your LLM key into a 9-agent code review team. Security, performance, logic, and more — reviewed in parallel on every PR.">
 
-  <meta property="og:title" content="RevHive — Your PR, Reviewed by 10 AI Agents">
-  <meta property="og:description" content="Bring your own LLM key. Get 10 specialized agents reviewing every PR in parallel.">
+  <meta property="og:title" content="RevHive — Your PR, Reviewed by 9 AI Agents">
+  <meta property="og:description" content="Bring your own LLM key. Get 9 specialized agents reviewing every PR in parallel.">
   <meta property="og:url" content="https://jansen003.github.io/RevHive/">
   <meta property="og:type" content="website">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="RevHive — Your PR, Reviewed by 10 AI Agents">
-  <meta name="twitter:description" content="Bring your own LLM key. Get 10 specialized agents reviewing every PR in parallel.">
+  <meta name="twitter:title" content="RevHive — Your PR, Reviewed by 9 AI Agents">
+  <meta name="twitter:description" content="Bring your own LLM key. Get 9 specialized agents reviewing every PR in parallel.">
 
   <script type="application/ld+json">
   {
@@ -22,8 +22,12 @@
     "name": "RevHive",
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Any",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "description": "Multi-agent code review engine. Bring your own LLM key, get 10 specialized reviewers on every PR.",
+    "offers": [
+      { "@type": "Offer", "price": "0", "priceCurrency": "USD", "name": "Free" },
+      { "@type": "Offer", "price": "12", "priceCurrency": "USD", "name": "Pro" },
+      { "@type": "Offer", "price": "25", "priceCurrency": "USD", "name": "Business" }
+    ],
+    "description": "Multi-agent code review engine. Bring your own LLM key, get 9 specialized reviewers on every PR.",
     "programmingLanguage": "Python",
     "license": "BSL-1.1"
   }
@@ -99,7 +103,7 @@
           <span class="bg-gradient-to-r from-accent to-emerald-400 bg-clip-text text-transparent">specialized AI reviewers.</span>
         </h1>
         <p class="fade-in fade-in-d1 mt-5 text-lg text-gray-400 leading-relaxed max-w-lg">
-          10 agents review security, logic, performance, and more &mdash; in parallel, on every PR. You bring the LLM key. RevHive brings the team.
+          9 specialized agents review security, logic, performance, and more &mdash; in parallel, on every PR. You bring the LLM key. RevHive brings the team.
         </p>
         <div class="fade-in fade-in-d2 mt-6 flex flex-wrap gap-2">
           <span class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">Security</span>
@@ -377,7 +381,82 @@
   </section>
 
   <!-- ============================================ -->
-  <!-- SCREEN 4: Works with Your LLM Stack          -->
+  <!-- SCREEN 4: Pricing                            -->
+  <!-- ============================================ -->
+  <section class="py-20 px-6 border-t border-white/5">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="fade-in text-3xl md:text-4xl font-bold text-white text-center mb-4">Simple, transparent pricing</h2>
+      <p class="fade-in fade-in-d1 text-gray-400 text-center mb-12 max-w-xl mx-auto">CLI mode is free forever. GitHub App tiers unlock deeper CI/CD integration and team features.</p>
+
+      <!-- 3 tiers -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <!-- Free -->
+        <div class="fade-in fade-in-d1 bg-surface-2 border border-white/5 rounded-xl p-6 flex flex-col">
+          <div class="text-lg font-bold text-white mb-1">Free</div>
+          <div class="text-3xl font-extrabold text-white mb-1">$0</div>
+          <div class="text-gray-500 text-sm mb-6">forever</div>
+          <a href="https://github.com/Jansen003/RevHive#quick-start" class="w-full text-center bg-surface-3 hover:bg-white/10 text-white font-medium py-2.5 rounded-lg transition-colors border border-white/10 mb-6">Get Started</a>
+          <ul class="space-y-2.5 text-sm text-gray-400">
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> 4 core review agents</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> 50 reviews/month</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> 1 concurrent review</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> PR summary comment</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> CLI / CI mode</li>
+            <li class="flex items-start gap-2 text-gray-600"><span class="mt-0.5 shrink-0">&#x2014;</span> Inline annotations</li>
+            <li class="flex items-start gap-2 text-gray-600"><span class="mt-0.5 shrink-0">&#x2014;</span> Commit status gate</li>
+            <li class="flex items-start gap-2 text-gray-600"><span class="mt-0.5 shrink-0">&#x2014;</span> Review history</li>
+            <li class="flex items-start gap-2 text-gray-600"><span class="mt-0.5 shrink-0">&#x2014;</span> Slack notifications</li>
+            <li class="flex items-start gap-2 text-gray-600"><span class="mt-0.5 shrink-0">&#x2014;</span> Priority support</li>
+          </ul>
+        </div>
+
+        <!-- Pro -->
+        <div class="fade-in fade-in-d2 bg-surface-2 border border-accent/30 rounded-xl p-6 flex flex-col relative">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-black text-xs font-bold px-3 py-0.5 rounded-full">RECOMMENDED</div>
+          <div class="text-lg font-bold text-white mb-1">Pro</div>
+          <div class="text-3xl font-extrabold text-white mb-1">$12<span class="text-lg text-gray-400 font-normal">/mo</span></div>
+          <div class="text-gray-500 text-sm mb-6">per installation</div>
+          <a href="https://github.com/apps/revhive-bot" class="w-full text-center bg-accent hover:bg-accent-dark text-white font-semibold py-2.5 rounded-lg transition-colors mb-6">Install &amp; Upgrade</a>
+          <ul class="space-y-2.5 text-sm text-gray-400">
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> <strong class="text-white">All 9 agents</strong></li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> Unlimited reviews</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> 10 concurrent reviews</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> Inline PR annotations</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> Commit status gate</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> CLI / CI mode</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> 30-day review history</li>
+            <li class="flex items-start gap-2 text-gray-600"><span class="mt-0.5 shrink-0">&#x2014;</span> Slack notifications</li>
+            <li class="flex items-start gap-2 text-gray-600"><span class="mt-0.5 shrink-0">&#x2014;</span> Permanent history</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> Email support (48h)</li>
+          </ul>
+        </div>
+
+        <!-- Business -->
+        <div class="fade-in fade-in-d3 bg-surface-2 border border-white/5 rounded-xl p-6 flex flex-col">
+          <div class="text-lg font-bold text-white mb-1">Business</div>
+          <div class="text-3xl font-extrabold text-white mb-1">$25<span class="text-lg text-gray-400 font-normal">/mo</span></div>
+          <div class="text-gray-500 text-sm mb-6">per installation</div>
+          <a href="https://github.com/apps/revhive-bot" class="w-full text-center bg-surface-3 hover:bg-white/10 text-white font-medium py-2.5 rounded-lg transition-colors border border-white/10 mb-6">Install &amp; Upgrade</a>
+          <ul class="space-y-2.5 text-sm text-gray-400">
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> <strong class="text-white">All 9 agents</strong></li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> Unlimited reviews</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> 100 concurrent reviews</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> Inline PR annotations</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> Commit status gate</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> CLI / CI mode</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> Permanent history</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> Slack notifications</li>
+            <li class="flex items-start gap-2"><span class="text-accent mt-0.5 shrink-0">&#x2713;</span> Priority support (4h SLA)</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="fade-in fade-in-d4 text-gray-500 text-center text-sm mt-8">All plans require your own LLM API key. You only pay your LLM provider for tokens &mdash; no markup from RevHive.</p>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SCREEN 5: Works with Your LLM Stack          -->
   <!-- ============================================ -->
   <section class="py-20 px-6 border-t border-white/5">
     <div class="max-w-5xl mx-auto">
@@ -440,10 +519,11 @@
           <div class="text-gray-400 text-sm space-y-1.5">
             <p>Install the App. Every PR gets reviewed automatically.</p>
             <p>Configure your own LLM key in the dashboard.</p>
-            <p>PR comments, inline annotations, and commit status checks.</p>
+            <p>Starts free (50 reviews/mo, 4 agents). Pro $12/mo unlocks all 9 agents, inline annotations, and commit status gates.</p>
           </div>
-          <div class="mt-4">
+          <div class="mt-4 flex flex-wrap gap-2">
             <a href="https://github.com/apps/revhive-bot" class="text-xs text-accent bg-accent/10 px-3 py-1.5 rounded hover:bg-accent/20 transition-colors">Install GitHub App</a>
+            <a href="#pricing" class="text-xs text-gray-400 bg-surface-3 px-3 py-1.5 rounded hover:bg-white/10 transition-colors">See Pricing</a>
           </div>
         </div>
       </div>
@@ -492,7 +572,7 @@
       <div class="space-y-6">
         <div class="fade-in fade-in-d1">
           <div class="text-white font-semibold mb-2">If I have to bring my own key, what am I paying RevHive for?</div>
-          <div class="text-gray-400 text-sm">Your key gives you a model. RevHive gives you a system &mdash; 10 specialized agents, semantic deduplication, conflict resolution, risk scoring, and GitHub integration. You pay your LLM provider for tokens. You pay RevHive for orchestration and automation.</div>
+          <div class="text-gray-400 text-sm">Your key gives you a model. RevHive gives you a system &mdash; 9 specialized agents, semantic deduplication, conflict resolution, risk scoring, and GitHub integration. You pay your LLM provider for tokens. You pay RevHive for the GitHub App: Free for 50 reviews/month (4 agents), <strong>$12/mo Pro</strong> for unlimited reviews with all 9 agents + inline comments + commit status gates, or <strong>$25/mo Business</strong> adding Slack notifications, permanent history, and priority 4h SLA support.</div>
         </div>
         <div class="fade-in fade-in-d2">
           <div class="text-white font-semibold mb-2">Is my code sent to external servers?</div>
@@ -508,7 +588,7 @@
         </div>
         <div class="fade-in fade-in-d5">
           <div class="text-white font-semibold mb-2">How is this different from GitHub Copilot code review?</div>
-          <div class="text-gray-400 text-sm">Copilot uses a single model pass. RevHive runs 10 specialized agents in parallel, each with domain-specific prompts, then a Coordinator deduplicates and resolves conflicts. The result is broader coverage and a structured risk score.</div>
+          <div class="text-gray-400 text-sm">Copilot uses a single model pass. RevHive runs 9 specialized agents in parallel, each with domain-specific prompts, then a Coordinator deduplicates and resolves conflicts. The result is broader coverage and a structured risk score.</div>
         </div>
       </div>
     </div>

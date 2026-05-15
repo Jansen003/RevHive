@@ -4,12 +4,12 @@
 [![License](https://img.shields.io/badge/license-BSL--1.1-blue)](LICENSE)
 [![LangGraph](https://img.shields.io/badge/framework-LangGraph-orange)](https://langchain-ai.github.io/langgraph/)
 [![MiMo](https://img.shields.io/badge/powered_by-MiMo-red)](https://platform.xiaomimimo.com)
-[![Agents](https://img.shields.io/badge/agents-10-blue)]()
+[![Agents](https://img.shields.io/badge/agents-9-blue)]()
 [![CI](https://github.com/Jansen003/RevHive/actions/workflows/ci.yml/badge.svg)](https://github.com/Jansen003/RevHive/actions)
 
 **AI-Powered Multi-Agent Code Review & Security Scanning System**
 
-RevHive deploys 10 specialized AI agents — 9 reviewing in parallel, 1 synthesizing results — to catch security vulnerabilities, performance bottlenecks, logic bugs, and style issues before they reach production.
+RevHive deploys 9 specialized review agents in parallel, plus a Coordinator that synthesizes results — catching security vulnerabilities, performance bottlenecks, logic bugs, and style issues before they reach production.
 
 - **Structured Output** — Agents return structured JSON via Pydantic schemas, with regex fallback for unsupported LLMs
 - **Semantic Deduplication** — Title matching + keyword Jaccard similarity prevents duplicate findings across agents
@@ -43,12 +43,26 @@ Example output:
 | "LGTM" culture devalues review | Every PR gets a thorough, objective audit |
 | No team-wide quality visibility | Trend analysis tracks code health over time |
 
+## Pricing
+
+| Tier | Price | Reviews | Agents | Concurrent | Inline Comments | Commit Status | History | Slack | Support |
+|------|-------|---------|--------|------------|:---:|:---:|:---:|:---:|:---:|
+| **Free** | $0 | 50/mo | 4 core | 1 | — | — | — | — | Community |
+| **Pro** | $12/mo | Unlimited | All 9 | 10 | ✅ | ✅ | 30 days | — | Email (48h) |
+| **Business** | $25/mo | Unlimited | All 9 | 100 | ✅ | ✅ | Permanent | ✅ | Priority (4h SLA) |
+
+**CLI mode is free forever** — `pip install revhive-ai`, bring your own LLM key, run locally or in CI.
+
+**GitHub App** uses the tiers above. Start free, upgrade when you need inline annotations, commit status gates, and all 9 agents.
+
+All plans are **BYOK** — you pay your LLM provider directly. RevHive charges for orchestration, not tokens.
+
 ## RevHive vs Others
 
 | Feature | RevHive | CodeRabbit | Sourcery | SonarQube | Copilot Review |
 |---------|:---:|:---:|:---:|:---:|:---:|
 | AI-driven review | ✅ | ✅ | ✅ | ❌ | ✅ |
-| Multi-agent parallel | ✅ 10 | ❌ | ❌ | ❌ | ❌ |
+| Multi-agent parallel | ✅ 9 agents | ❌ | ❌ | ❌ | ❌ |
 | Chinese LLM support | ✅ 5 providers | ❌ | ❌ | ❌ | ❌ |
 | Risk score (0-100) | ✅ | ✅ | ❌ | ✅ | ❌ |
 | CLI local-first | ✅ | ❌ | ❌ | ❌ | ❌ |
@@ -107,7 +121,7 @@ docker run --rm -e LLM_API_KEY=your-api-key -v $(pwd):/code revhive review --fil
 
 **Option C: GitHub App (automatic PR reviews)**
 
-[Install the GitHub App](https://github.com/apps/revhive-bot) → every PR gets reviewed automatically, no CLI needed.
+[Install the GitHub App](https://github.com/apps/revhive-bot) → every PR gets reviewed automatically. Starts free (50 reviews/mo, 4 agents). Upgrade to **Pro ($12/mo)** for all 9 agents, inline comments, and commit status gates, or **Business ($25/mo)** for Slack notifications, permanent history, and priority support.
 
 ## Demo Mode
 
@@ -253,7 +267,7 @@ jobs:
 
 ```
 src/revhive/
-  agents/          # 10 specialized review agents
+  agents/          # 9 specialized review agents + coordinator
   graph/           # LangGraph workflow orchestration
   utils/           # Utility modules
   team/            # Batch processing engine

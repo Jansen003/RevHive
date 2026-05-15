@@ -107,7 +107,26 @@ docker run --rm -e LLM_API_KEY=your-api-key -v $(pwd):/code revhive review --fil
 
 **Option C: GitHub App (automatic PR reviews)**
 
-[Install the GitHub App](https://github.com/apps/revhive-bot) → every PR gets reviewed automatically, no CLI needed.
+[![Install GitHub App](https://img.shields.io/badge/Install-GitHub%20App-brightgreen)](https://github.com/apps/revhive-bot)
+
+1. **[Install the GitHub App](https://github.com/apps/revhive-bot)**
+2. **Configure your API key** (BYOK — Bring Your Own Key)
+3. **Every PR gets automatic review** with inline comments and risk score
+
+**BYOK (Bring Your Own Key):**
+- Use your own LLM API key (OpenAI, DeepSeek, Anthropic, etc.)
+- Your code stays in your GitHub — we only read diffs
+- AES-256 encrypted key storage
+- Free tier: 50 reviews/month
+
+**Supported LLM Providers:**
+- OpenAI (GPT-4o)
+- DeepSeek (deepseek-chat)
+- Anthropic (Claude)
+- MiMo (Xiaomi)
+- Qwen (Alibaba)
+- GLM (Zhipu)
+- Kimi (Moonshot)
 
 ## Demo Mode
 

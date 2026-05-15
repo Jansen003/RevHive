@@ -8,6 +8,7 @@ alternative solutions. This is the highest token consumption mode.
 """
 
 import logging
+import warnings
 from typing import Optional
 
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
@@ -38,6 +39,7 @@ class ConversationReviewer:
 
     def __init__(self, model: Optional[str] = None, api_key: Optional[str] = None,
                  base_url: Optional[str] = None, provider: Optional[str] = None):
+        warnings.warn("ConversationReviewer is EXPERIMENTAL and may be removed or redesigned.", FutureWarning, stacklevel=2)
         from revhive.utils.llm_client import create_llm_client
         self.llm = create_llm_client(
             api_key=api_key or "",

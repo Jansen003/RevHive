@@ -6,6 +6,7 @@ Scans every commit in a date range, running full review on each version.
 Extremely token-intensive: N commits × full review per commit."""
 
 import subprocess
+import warnings
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Optional
@@ -37,6 +38,7 @@ class TrendAnalyzer:
     """
 
     def __init__(self, repo_path: str, model: Optional[str] = None):
+        warnings.warn("TrendAnalyzer is EXPERIMENTAL and may be removed or redesigned.", FutureWarning, stacklevel=2)
         self.repo_path = repo_path
         self.workflow = CodeReviewWorkflow(model=model)
 

@@ -120,7 +120,8 @@ class CodeReviewWorkflow:
     """Orchestrates the multi-agent code review using LangGraph."""
 
     def __init__(self, model: Optional[str] = None, config: Optional[RevHiveConfig] = None, plugin_dir: str = "plugins",
-                 api_key: Optional[str] = None, base_url: Optional[str] = None):
+                 api_key: Optional[str] = None, base_url: Optional[str] = None,
+                 enabled_agents: Optional[list[str]] = None):
         self.config = config or load_config()
         _api_key = api_key or os.getenv("LLM_API_KEY")
         _base_url = base_url or os.getenv("LLM_BASE_URL", "https://api.xiaomimimo.com/v1")
@@ -133,10 +134,13 @@ class CodeReviewWorkflow:
 
         common_kwargs = {"model": _model, "api_key": _api_key, "base_url": _base_url, "request_timeout": 120}
 
-        # Only instantiate agents that are enabled in the config.
+        # Apply agent filter: explicit list > config > all agents.
         self.agents: dict[str, object] = {}
         for name, cls in all_agents.items():
-            if self.config.is_agent_enabled(name):
+            if enabled_agents is not None:
+                if name in enabled_agents:
+                    self.agents[name] = cls(**common_kwargs)
+            elif self.config.is_agent_enabled(name):
                 self.agents[name] = cls(**common_kwargs)
 
         self.coordinator = CoordinatorAgent(**common_kwargs)

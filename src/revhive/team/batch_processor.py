@@ -8,6 +8,7 @@ This is the primary driver for high-volume token consumption."""
 import asyncio
 import logging
 import os
+import warnings
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -70,6 +71,7 @@ class TeamBatchProcessor:
     """
 
     def __init__(self, config: TeamConfig, model: Optional[str] = None):
+        warnings.warn("TeamBatchProcessor is EXPERIMENTAL and may be removed or redesigned.", FutureWarning, stacklevel=2)
         self.config = config
         self.workflow = CodeReviewWorkflow(model=model)
         self._model = model or self.workflow.config.model or os.getenv("LLM_MODEL", "mimo-v2.5-pro")

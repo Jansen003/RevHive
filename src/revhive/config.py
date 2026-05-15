@@ -23,6 +23,19 @@ logger = logging.getLogger(__name__)
 
 _DEFAULT_CONFIG_FILENAME = ".revhive.yml"
 
+# Shared provider → base_url/model mapping. Single source of truth for
+# both the CLI config resolver and the server's BYOK provider lookup.
+MODEL_PRESETS: dict[str, dict[str, str]] = {
+    "mimo": {"base_url": "https://api.xiaomimimo.com/v1", "model": "mimo-v2.5-pro"},
+    "openai": {"base_url": "https://api.openai.com/v1", "model": "gpt-4o"},
+    "deepseek": {"base_url": "https://api.deepseek.com/v1", "model": "deepseek-chat"},
+    "qwen": {"base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1", "model": "qwen-plus"},
+    "glm": {"base_url": "https://open.bigmodel.cn/api/paas/v4", "model": "glm-4"},
+    "kimi": {"base_url": "https://api.moonshot.cn/v1", "model": "kimi"},
+    "anthropic": {"base_url": "https://api.anthropic.com", "model": "claude-sonnet-4-20250514", "provider": "anthropic"},
+    "claude": {"base_url": "https://api.anthropic.com", "model": "claude-sonnet-4-20250514", "provider": "anthropic"},
+}
+
 # Cache for loaded config to avoid re-reading from disk on every agent construction.
 _config_cache: RevHiveConfig | None = None
 _config_cache_path: str | None = None
@@ -41,17 +54,6 @@ class AgentConfig:
 class RevHiveConfig:
     """Top-level configuration object loaded from ``.revhive.yml``."""
 
-    MODEL_PRESETS: dict[str, dict[str, str]] = field(default_factory=lambda: {
-        "mimo": {"base_url": "https://api.xiaomimimo.com/v1", "model": "mimo-v2.5-pro"},
-        "openai": {"base_url": "https://api.openai.com/v1", "model": "gpt-4o"},
-        "deepseek": {"base_url": "https://api.deepseek.com/v1", "model": "deepseek-chat"},
-        "qwen": {"base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1", "model": "qwen-plus"},
-        "glm": {"base_url": "https://open.bigmodel.cn/api/paas/v4", "model": "glm-4"},
-        "kimi": {"base_url": "https://api.moonshot.cn/v1", "model": "kimi"},
-        "anthropic": {"base_url": "https://api.anthropic.com", "model": "claude-sonnet-4-20250514", "provider": "anthropic"},
-        "claude": {"base_url": "https://api.anthropic.com", "model": "claude-sonnet-4-20250514", "provider": "anthropic"},
-    })
-
     model: Optional[str] = None
     agents: dict[str, AgentConfig] = field(default_factory=dict)
     ignore: list[str] = field(default_factory=list)
@@ -66,8 +68,8 @@ class RevHiveConfig:
         Otherwise return an empty dict — the caller falls through to
         env-var / default logic.
         """
-        if model_name and model_name in self.MODEL_PRESETS:
-            return dict(self.MODEL_PRESETS[model_name])
+        if model_name and model_name in MODEL_PRESETS:
+            return dict(MODEL_PRESETS[model_name])
         return {}
 
     def is_agent_enabled(self, agent_name: str) -> bool:

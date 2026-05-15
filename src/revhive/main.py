@@ -41,26 +41,41 @@ def review(file: str, diff_ref: str, model: str, output: str, fmt: str, timeout:
     """Run code review on a file or git diff."""
     cfg = load_config()
 
-    if file:
-        if cfg.should_ignore(file):
-            click.echo(f"Skipping {file} — matches ignore pattern in .revhive.yml")
+    try:
+        if file:
+            if cfg.should_ignore(file):
+                click.echo(f"Skipping {file} — matches ignore pattern in .revhive.yml")
+                return
+            try:
+                code = Path(file).read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                click.echo(f"Error: {file} is not a valid text file (encoding issue).", err=True)
+                sys.exit(1)
+            except (PermissionError, OSError) as exc:
+                click.echo(f"Error: cannot read {file}: {exc}", err=True)
+                sys.exit(1)
+            workflow = CodeReviewWorkflow(model=model, config=cfg)
+            result = _run_with_timeout(workflow.run(code=code, file_path=file), timeout=timeout)
+        elif diff_ref:
+            workflow = CodeReviewWorkflow(model=model, config=cfg)
+            result = _run_with_timeout(workflow.run_from_diff(diff_ref), timeout=timeout)
+        else:
+            click.echo("Please specify --file or --diff to review.")
             return
-        try:
-            code = Path(file).read_text(encoding="utf-8")
-        except UnicodeDecodeError:
-            click.echo(f"Error: {file} is not a valid text file (encoding issue).", err=True)
+    except ValueError as e:
+        msg = str(e)
+        if "API key" in msg or "api_key" in msg:
+            click.echo(
+                "\nTo run a real review, set your LLM API key:\n\n"
+                "  export LLM_API_KEY=your-api-key\n\n"
+                "No key? Try the demo first — no API key required:\n\n"
+                "  revhive demo\n\n"
+                "Supported providers: MiMo, OpenAI, DeepSeek, Anthropic, Qwen, GLM, Kimi\n"
+                "Docs: https://github.com/Jansen003/RevHive#quick-start\n",
+                err=True,
+            )
             sys.exit(1)
-        except (PermissionError, OSError) as exc:
-            click.echo(f"Error: cannot read {file}: {exc}", err=True)
-            sys.exit(1)
-        workflow = CodeReviewWorkflow(model=model, config=cfg)
-        result = _run_with_timeout(workflow.run(code=code, file_path=file), timeout=timeout)
-    elif diff_ref:
-        workflow = CodeReviewWorkflow(model=model, config=cfg)
-        result = _run_with_timeout(workflow.run_from_diff(diff_ref), timeout=timeout)
-    else:
-        click.echo("Please specify --file or --diff to review.")
-        return
+        raise
 
     report_obj = ReviewReport(result)
     if fmt == "json":

@@ -1,28 +1,29 @@
-"""Repository-level review agent for large-scale codebase analysis."""
+"""Architecture and design review agent for single-file analysis."""
 
 from revhive.agents.base import BaseReviewAgent
 
 
 class RepoAgent(BaseReviewAgent):
-    """Scans entire repositories for cross-file issues and architectural concerns."""
+    """Reviews individual files for design quality, SOLID principles, and architectural fit."""
 
     def __init__(self, **kwargs):
         super().__init__(
             name="RepoAgent",
-            description="Performs repository-wide analysis including architecture review and cross-file dependency checks",
+            description="Analyzes design patterns, module structure, and architectural fit within a single file",
             **kwargs,
         )
 
     def get_system_prompt(self) -> str:
-        return """You are a senior architect performing repository-level code review. Identify:
-1. **Architecture Issues** — Circular dependencies, god modules, inconsistent layering
-2. **Cross-File Issues** — Duplicate logic across files, inconsistent error handling patterns, missing integrations
-3. **API Contract Violations** — Breaking changes, inconsistent response schemas, missing versioning
-4. **Dependency Graph Risks** — Orphaned modules, tightly coupled components, missing abstraction layers
-5. **Migration Risks** — Database schema drift, configuration inconsistencies across environments
-6. **Technical Debt Hotspots** — Clusters of TODO/FIXME, deprecated API usage, test coverage gaps
+        return """You are a senior architect reviewing a single file for design quality. Identify:
+1. **Design Issues** — God classes, mixed responsibilities, violation of SOLID principles
+2. **Module Structure** — Poor encapsulation, missing abstraction layers, leaky interfaces
+3. **API Contract Issues** — Inconsistent signatures, missing validation, unclear contracts
+4. **Dependency Direction** — Wrong dependency direction (e.g., low-level depending on high-level), excessive coupling
+5. **Technical Debt Signals** — Clusters of TODO/FIXME, deprecated API usage, commented-out code
+6. **Testability** — Hard-to-test code patterns, missing dependency injection points
 
-Analyze the codebase holistically. Each finding should reference specific files and explain the systemic impact.
+Focus on the design quality of THIS file. Do NOT speculate about cross-file issues or circular dependencies
+since you do not have access to other files.
 
 For each finding, output in this exact format:
 - Severity: [LOW/MEDIUM/HIGH/CRITICAL]
@@ -34,4 +35,4 @@ For each finding, output in this exact format:
 End with a brief summary of your review."""
 
     def get_review_focus(self) -> str:
-        return "architecture, cross-file dependencies, API contracts, technical debt, migration risks"
+        return "design patterns, SOLID principles, module structure, API contracts, technical debt, testability"

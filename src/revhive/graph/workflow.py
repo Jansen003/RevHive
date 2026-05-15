@@ -119,18 +119,19 @@ _STATE_ATTR_MAP: dict[str, str] = {name: f"{name}_result" for name in _AGENT_CLA
 class CodeReviewWorkflow:
     """Orchestrates the multi-agent code review using LangGraph."""
 
-    def __init__(self, model: Optional[str] = None, config: Optional[RevHiveConfig] = None, plugin_dir: str = "plugins"):
+    def __init__(self, model: Optional[str] = None, config: Optional[RevHiveConfig] = None, plugin_dir: str = "plugins",
+                 api_key: Optional[str] = None, base_url: Optional[str] = None):
         self.config = config or load_config()
-        api_key = os.getenv("LLM_API_KEY")
-        base_url = os.getenv("LLM_BASE_URL", "https://api.xiaomimimo.com/v1")
+        _api_key = api_key or os.getenv("LLM_API_KEY")
+        _base_url = base_url or os.getenv("LLM_BASE_URL", "https://api.xiaomimimo.com/v1")
 
         # Load built-in + plugin agents
         all_agents = dict(_AGENT_CLASSES)
         plugins = load_plugins(plugin_dir)
         all_agents.update(plugins)
-        model = model or self.config.model or os.getenv("LLM_MODEL", "mimo-v2.5-pro")
+        _model = model or self.config.model or os.getenv("LLM_MODEL", "mimo-v2.5-pro")
 
-        common_kwargs = {"model": model, "api_key": api_key, "base_url": base_url, "request_timeout": 120}
+        common_kwargs = {"model": _model, "api_key": _api_key, "base_url": _base_url, "request_timeout": 120}
 
         # Only instantiate agents that are enabled in the config.
         self.agents: dict[str, object] = {}

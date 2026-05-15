@@ -4,12 +4,12 @@
 [![License](https://img.shields.io/badge/license-BSL--1.1-blue)](LICENSE)
 [![LangGraph](https://img.shields.io/badge/framework-LangGraph-orange)](https://langchain-ai.github.io/langgraph/)
 [![MiMo](https://img.shields.io/badge/powered_by-MiMo-red)](https://platform.xiaomimimo.com)
-[![Agents](https://img.shields.io/badge/agents-9-blue)]()
+[![Agents](https://img.shields.io/badge/agents-10-blue)]()
 [![CI](https://github.com/Jansen003/RevHive/actions/workflows/ci.yml/badge.svg)](https://github.com/Jansen003/RevHive/actions)
 
 **AI-Powered Multi-Agent Code Review & Security Scanning System**
 
-RevHive deploys 9 specialized review agents in parallel, plus a Coordinator that synthesizes results — catching security vulnerabilities, performance bottlenecks, logic bugs, and style issues before they reach production.
+RevHive deploys 10 specialized AI agents — 9 reviewing in parallel, 1 synthesizing results — to catch security vulnerabilities, performance bottlenecks, logic bugs, and style issues before they reach production.
 
 - **Structured Output** — Agents return structured JSON via Pydantic schemas, with regex fallback for unsupported LLMs
 - **Semantic Deduplication** — Title matching + keyword Jaccard similarity prevents duplicate findings across agents
@@ -62,7 +62,7 @@ All plans are **BYOK** — you pay your LLM provider directly. RevHive charges f
 | Feature | RevHive | CodeRabbit | Sourcery | SonarQube | Copilot Review |
 |---------|:---:|:---:|:---:|:---:|:---:|
 | AI-driven review | ✅ | ✅ | ✅ | ❌ | ✅ |
-| Multi-agent parallel | ✅ 9 agents | ❌ | ❌ | ❌ | ❌ |
+| Multi-agent parallel | ✅ 10 | ❌ | ❌ | ❌ | ❌ |
 | Chinese LLM support | ✅ 5 providers | ❌ | ❌ | ❌ | ❌ |
 | Risk score (0-100) | ✅ | ✅ | ❌ | ✅ | ❌ |
 | CLI local-first | ✅ | ❌ | ❌ | ❌ | ❌ |
@@ -267,7 +267,7 @@ jobs:
 
 ```
 src/revhive/
-  agents/          # 9 specialized review agents + coordinator
+  agents/          # 10 specialized agents (9 review + coordinator)
   graph/           # LangGraph workflow orchestration
   utils/           # Utility modules
   team/            # Batch processing engine

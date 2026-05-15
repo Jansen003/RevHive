@@ -80,7 +80,7 @@ Example output:
 | **SecurityAgent** | SQL injection, XSS, secrets, weak crypto, auth flaws |
 | **PerformanceAgent** | N+1 queries, memory leaks, algorithmic complexity |
 | **LogicAgent** | Edge cases, error handling, race conditions, type safety |
-| **RepoAgent** | Architecture review, cross-file dependencies, tech debt |
+| **RepoAgent** | Design patterns, SOLID principles, module structure, testability |
 | **RefactorAgent** | Design patterns, code transformation, incremental migration |
 | **FixAgent** | Generates complete corrected code with root cause analysis |
 | **TestAgent** | Unit tests, edge case tests, security regression tests |

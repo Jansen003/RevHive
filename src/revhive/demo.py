@@ -321,6 +321,14 @@ def _build_coordinator_summary(findings: list[ReviewFinding], risk_score: int = 
 
     lines.append("")
     lines.append("---")
-    lines.append("*Note: This report was generated in DEMO mode. Real MiMo-powered reviews will call the API.*")
+    lines.append("*This report was generated in DEMO mode — no API key required.*")
+    lines.append("")
+    lines.append("**Ready for real reviews?**")
+    lines.append("```bash")
+    lines.append("export LLM_API_KEY=your-key        # OpenAI, DeepSeek, MiMo, Qwen, Anthropic…")
+    lines.append("revhive review --file src/main.py  # real multi-agent review")
+    lines.append("```")
+    lines.append("")
+    lines.append("🖥️ **Automate on every PR** → [Install GitHub App](https://github.com/apps/revhive-bot)")
 
     return "\n".join(lines)

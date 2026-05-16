@@ -57,6 +57,8 @@ Example output:
 
 All plans are **BYOK** — you pay your LLM provider directly. RevHive charges for orchestration, not tokens.
 
+**Typical LLM cost per PR review:** ~$0.05 with DeepSeek · ~$0.05–0.15 with MiMo · ~$0.10–0.30 with GPT-4o · Free with MiMo credits. You control spend through your own LLM account.
+
 ## RevHive vs Others
 
 | Feature | RevHive | CodeRabbit | Sourcery | SonarQube | Copilot Review |
@@ -121,7 +123,7 @@ docker run --rm -e LLM_API_KEY=your-api-key -v $(pwd):/code revhive review --fil
 
 **Option C: GitHub App (automatic PR reviews)**
 
-[Install the GitHub App](https://github.com/apps/revhive-bot) → every PR gets reviewed automatically. Starts free (50 reviews/mo, 4 agents). Upgrade to **Pro ($12/mo)** for all 9 agents, inline comments, and commit status gates, or **Business ($25/mo)** for Slack notifications, permanent history, and priority support.
+[Install the GitHub App](https://github.com/apps/revhive-bot), paste your LLM API key in the dashboard (auto-created on install), and every PR gets reviewed automatically. Starts free (50 reviews/mo, 4 core agents). Upgrade to **Pro ($12/mo)** for all 9 agents, inline comments, and commit status gates, or **Business ($25/mo)** for Slack notifications, permanent history, and priority support. **DeepSeek is the default provider** in the dashboard — ~$0.05/review.
 
 ## Demo Mode
 
@@ -138,19 +140,17 @@ This produces a realistic review report identical in structure to a live MiMo-ba
 
 ## Supported LLM Backends
 
-| Provider | Model | Setup |
-|---|---|---|
-| **MiMo (Xiaomi)** | `mimo-v2.5-pro` | `LLM_BASE_URL=https://api.xiaomimimo.com/v1` |
-| OpenAI | `gpt-4o` | `LLM_BASE_URL=https://api.openai.com/v1` |
-| DeepSeek | `deepseek-chat` | `LLM_BASE_URL=https://api.deepseek.com/v1` |
-| Qwen (Alibaba) | `qwen-plus` | `LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1` |
-| GLM (Zhipu) | `glm-4` | `LLM_BASE_URL=https://open.bigmodel.cn/api/paas/v4` |
-| Kimi | `kimi` | `LLM_BASE_URL=https://api.moonshot.cn/v1` |
-| **Anthropic** | `claude-sonnet-4-20250514` | `pip install -e ".[anthropic]"`, set `ANTHROPIC_API_KEY` |
+| Provider | Model | Cost / Review | Setup |
+|---|---|---|---|
+| **DeepSeek** | `deepseek-chat` | ~$0.05 | `LLM_BASE_URL=https://api.deepseek.com/v1` |
+| **MiMo (Xiaomi)** | `mimo-v2.5-pro` | ~$0.05–0.15 (free credits) | `LLM_BASE_URL=https://api.xiaomimimo.com/v1` |
+| OpenAI | `gpt-4o` | ~$0.10–0.30 | `LLM_BASE_URL=https://api.openai.com/v1` |
+| Qwen (Alibaba) | `qwen-plus` | ~$0.05–0.10 | `LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| Anthropic | `claude-sonnet-4-20250514` | ~$0.15–0.40 | `pip install -e ".[anthropic]"`, set `ANTHROPIC_API_KEY` |
 
-**Quick preset:** Set `LLM_MODEL` to a preset name (e.g., `openai`, `deepseek`, `qwen`) and RevHive auto-configures the base URL. Explicit `LLM_BASE_URL` takes priority.
+**Quick preset:** Set `LLM_MODEL` to a preset name (e.g., `deepseek`, `openai`, `qwen`) and RevHive auto-configures the base URL. Explicit `LLM_BASE_URL` takes priority.
 
-MiMo is the **default and recommended backend**. RevHive is optimized for MiMo's token economics and model capabilities.
+**CLI default:** MiMo (`mimo-v2.5-pro`). **GitHub App dashboard default:** DeepSeek (`deepseek-chat`) — the cheapest option at ~$0.05/review.
 
 ## Supported Languages
 
@@ -244,9 +244,9 @@ jobs:
       - run: pip install revhive-ai
       - name: Run RevHive Review
         env:
-          LLM_API_KEY: ${{ secrets.MIMO_API_KEY }}
-          LLM_BASE_URL: https://api.xiaomimimo.com/v1
-          LLM_MODEL: mimo-v2.5-pro
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}       # DeepSeek is ~$0.05/review
+          LLM_BASE_URL: https://api.deepseek.com/v1
+          LLM_MODEL: deepseek-chat
         run: |
           revhive review --diff HEAD~1 --format markdown --output review_report.md
       - name: Post Review Comment

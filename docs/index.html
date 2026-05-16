@@ -451,7 +451,8 @@
         </div>
       </div>
 
-      <p class="fade-in fade-in-d4 text-gray-500 text-center text-sm mt-8">All plans require your own LLM API key. You only pay your LLM provider for tokens &mdash; no markup from RevHive.</p>
+      <p class="fade-in fade-in-d4 text-gray-500 text-center text-sm mt-8">All plans require your own LLM API key. You only pay your LLM provider for tokens — no markup from RevHive.</p>
+      <p class="fade-in fade-in-d4 text-gray-600 text-center text-xs mt-2">Typical cost per PR review: ~$0.05 with DeepSeek · ~$0.05–0.15 with MiMo · ~$0.10–0.30 with GPT-4o. You control spend.</p>
     </div>
   </section>
 
@@ -465,11 +466,15 @@
 
       <!-- Provider grid -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto mb-12">
-        <div class="agent-card fade-in fade-in-d1 bg-surface-2 border border-white/5 rounded-lg p-4 text-center">
-          <div class="text-white font-medium text-sm">MiMo</div>
-          <div class="text-gray-500 text-xs">Default</div>
+        <div class="agent-card fade-in fade-in-d1 bg-surface-2 border border-accent/30 rounded-lg p-4 text-center">
+          <div class="text-white font-medium text-sm">DeepSeek</div>
+          <div class="text-accent text-xs">~$0.05/review</div>
         </div>
         <div class="agent-card fade-in fade-in-d1 bg-surface-2 border border-white/5 rounded-lg p-4 text-center">
+          <div class="text-white font-medium text-sm">MiMo</div>
+          <div class="text-gray-500 text-xs">Free credits available</div>
+        </div>
+        <div class="agent-card fade-in fade-in-d2 bg-surface-2 border border-white/5 rounded-lg p-4 text-center">
           <div class="text-white font-medium text-sm">OpenAI</div>
           <div class="text-gray-500 text-xs">GPT-4o</div>
         </div>
@@ -477,23 +482,11 @@
           <div class="text-white font-medium text-sm">Anthropic</div>
           <div class="text-gray-500 text-xs">Claude</div>
         </div>
-        <div class="agent-card fade-in fade-in-d2 bg-surface-2 border border-white/5 rounded-lg p-4 text-center">
-          <div class="text-white font-medium text-sm">DeepSeek</div>
-          <div class="text-gray-500 text-xs">Chat</div>
-        </div>
         <div class="agent-card fade-in fade-in-d3 bg-surface-2 border border-white/5 rounded-lg p-4 text-center">
           <div class="text-white font-medium text-sm">Qwen</div>
           <div class="text-gray-500 text-xs">Alibaba</div>
         </div>
         <div class="agent-card fade-in fade-in-d3 bg-surface-2 border border-white/5 rounded-lg p-4 text-center">
-          <div class="text-white font-medium text-sm">GLM</div>
-          <div class="text-gray-500 text-xs">Zhipu</div>
-        </div>
-        <div class="agent-card fade-in fade-in-d4 bg-surface-2 border border-white/5 rounded-lg p-4 text-center">
-          <div class="text-white font-medium text-sm">Kimi</div>
-          <div class="text-gray-500 text-xs">Moonshot</div>
-        </div>
-        <div class="agent-card fade-in fade-in-d4 bg-surface-2 border border-white/5 rounded-lg p-4 text-center">
           <div class="text-white font-medium text-sm">Any</div>
           <div class="text-gray-500 text-xs">OpenAI-compatible</div>
         </div>
@@ -517,8 +510,7 @@
           <div class="text-accent font-semibold text-sm mb-2">GitHub App</div>
           <div class="text-white font-bold text-lg mb-2">Managed integration</div>
           <div class="text-gray-400 text-sm space-y-1.5">
-            <p>Install the App. Every PR gets reviewed automatically.</p>
-            <p>Configure your own LLM key in the dashboard.</p>
+            <p>Install the App. Paste your LLM key in the auto-created dashboard — done. DeepSeek is default (~$0.05/review).</p>
             <p>Starts free (50 reviews/mo, 4 agents). Pro $12/mo unlocks all 9 agents, inline annotations, and commit status gates.</p>
           </div>
           <div class="mt-4 flex flex-wrap gap-2">
@@ -580,7 +572,7 @@
         </div>
         <div class="fade-in fade-in-d3">
           <div class="text-white font-semibold mb-2">How much does the LLM API cost?</div>
-          <div class="text-gray-400 text-sm">A single-file review uses ~35K tokens (~$0.06 with MiMo). You control costs through your own LLM account &mdash; no markup from us.</div>
+          <div class="text-gray-400 text-sm">A typical PR review uses ~35K tokens — ~$0.05 with DeepSeek, ~$0.06 with MiMo, ~$0.15 with GPT-4o. You control costs through your own LLM account — no markup from us.</div>
         </div>
         <div class="fade-in fade-in-d4">
           <div class="text-white font-semibold mb-2">What languages are supported?</div>

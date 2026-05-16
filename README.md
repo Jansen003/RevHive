@@ -108,7 +108,7 @@ All plans are **BYOK** — you pay your LLM provider directly. RevHive charges f
 **Option A: CLI (30 seconds)**
 
 ```bash
-pip install revhive-ai
+pip install revhive-ai              # or: pipx install revhive-ai
 revhive demo                        # no API key needed
 export LLM_API_KEY=your-api-key
 revhive review --file src/main.py   # real review

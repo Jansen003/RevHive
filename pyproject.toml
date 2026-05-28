@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "revhive-ai"
-version = "0.3.10"
-description = "AI code review tool with 10 parallel agents. Security scanning, performance analysis, and logic review. Supports MiMo, OpenAI, DeepSeek, Qwen, GLM, Kimi, Anthropic."
+version = "0.3.11"
+description = "10 AI agents review your code in 30 seconds. Security, performance, logic, and more. Supports MiMo, OpenAI, DeepSeek, Qwen, GLM, Kimi, Anthropic. Try `revhive demo` — no API key needed."
 readme = "README.md"
 license = {text = "BSL-1.1"}
 requires-python = ">=3.10"

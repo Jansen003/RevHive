@@ -66,12 +66,12 @@ def review(file: str, diff_ref: str, model: str, output: str, fmt: str, timeout:
         msg = str(e)
         if "API key" in msg or "api_key" in msg:
             click.echo(
-                "\nTo run a real review, set your LLM API key:\n\n"
-                "  export LLM_API_KEY=your-api-key\n\n"
-                "No key? Try the demo first — no API key required:\n\n"
-                "  revhive demo\n\n"
-                "Supported providers: MiMo, OpenAI, DeepSeek, Anthropic, Qwen, GLM, Kimi\n"
-                "Docs: https://github.com/Jansen003/RevHive#quick-start\n",
+                "\n  No API key found. Try the demo first — no key needed:\n\n"
+                "    revhive demo\n\n"
+                "  Or set your LLM API key:\n\n"
+                "    export LLM_API_KEY=your-api-key\n\n"
+                "  Supported: MiMo, OpenAI, DeepSeek, Anthropic, Qwen, GLM, Kimi\n"
+                "  Docs: https://github.com/Jansen003/RevHive#quick-start\n",
                 err=True,
             )
             sys.exit(1)
@@ -181,6 +181,13 @@ def _render_demo_rich(result) -> None:
 
     panel = Panel(body, title="[bold]🛡️ RevHive Review Report[/bold]", box=box.ROUNDED)
     console.print(panel)
+
+    # Star prompt
+    star_text = Text()
+    star_text.append("\n⭐ Like RevHive? ", style="bold")
+    star_text.append("Star us on GitHub", style="bold yellow link https://github.com/Jansen003/RevHive")
+    star_text.append(" — helps more developers find this tool!", style="dim")
+    console.print(star_text)
 
 
 @cli.command()

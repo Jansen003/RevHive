@@ -1,15 +1,23 @@
 # RevHive
 
+[![PyPI](https://img.shields.io/pypi/v/revhive-ai)](https://pypi.org/project/revhive-ai/)
+[![Downloads](https://img.shields.io/pypi/dm/revhive-ai)](https://pypi.org/project/revhive-ai/)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-BSL--1.1-blue)](LICENSE)
-[![LangGraph](https://img.shields.io/badge/framework-LangGraph-orange)](https://langchain-ai.github.io/langgraph/)
-[![MiMo](https://img.shields.io/badge/powered_by-MiMo-red)](https://platform.xiaomimimo.com)
-[![Agents](https://img.shields.io/badge/agents-10-blue)]()
 [![CI](https://github.com/Jansen003/RevHive/actions/workflows/ci.yml/badge.svg)](https://github.com/Jansen003/RevHive/actions)
 
-**AI-Powered Multi-Agent Code Review & Security Scanning System**
+> **10 个 AI Agent 并行审查你的代码，30 秒出报告。安全漏洞、性能瓶颈、逻辑 Bug，一个都不放过。**
 
-RevHive deploys 10 specialized AI agents — 9 reviewing in parallel, 1 synthesizing results — to catch security vulnerabilities, performance bottlenecks, logic bugs, and style issues before they reach production.
+```bash
+pip install revhive-ai && revhive demo   # 30 秒体验，无需 API Key
+```
+
+**RevHive** 是一个 AI 驱动的多 Agent 代码审查系统。9 个专业 Agent 并行审查，1 个 Coordinator 汇总去重、解决冲突、计算风险评分。
+
+- **10 个专业 Agent** — 安全、性能、逻辑、风格、测试、文档……各司其职
+- **风险评分 0-100** — 一眼看出这个 PR 能不能合并
+- **Demo 模式** — 不需要 API Key，30 秒跑完完整流程
+- **CLI 优先** — 本地运行，数据不出你的电脑
 
 - **Structured Output** — Agents return structured JSON via Pydantic schemas, with regex fallback for unsupported LLMs
 - **Semantic Deduplication** — Title matching + keyword Jaccard similarity prevents duplicate findings across agents
@@ -36,12 +44,19 @@ Example output:
 
 ## Why RevHive?
 
-| Pain Point | RevHive Solution |
+| 你的痛点 | RevHive 的解法 |
 |---|---|
-| Manual CR takes 1-2 hours/day | 9 agents review in parallel in under 30 seconds |
-| Human reviewers miss subtle bugs | Each agent is a domain expert (security, perf, logic...) |
-| "LGTM" culture devalues review | Every PR gets a thorough, objective audit |
-| No team-wide quality visibility | Trend analysis tracks code health over time |
+| 人工 Code Review 每天花 1-2 小时 | 9 个 Agent 并行审查，30 秒出报告 |
+| 人工审查容易遗漏细节 | 每个 Agent 是领域专家（安全、性能、逻辑……） |
+| "LGTM" 文化让 Bug 溜进去 | 每个 PR 都有完整的客观审计 |
+| 不知道团队代码质量趋势 | 跟踪代码健康度变化 |
+
+## 为什么值得 Star？
+
+- 这是目前**唯一支持中文 LLM（MiMo、DeepSeek、Qwen、GLM、Kimi）的代码审查工具**
+- CLI 完全免费，BYOK（自带 API Key），数据不出本地
+- Demo 模式让你 30 秒看到完整效果，零成本评估
+- 我们在持续迭代，Star 了就能收到更新通知
 
 ## Pricing
 
@@ -108,10 +123,9 @@ All plans are **BYOK** — you pay your LLM provider directly. RevHive charges f
 **Option A: CLI (30 seconds)**
 
 ```bash
-pip install revhive-ai              # or: pipx install revhive-ai
-revhive demo                        # no API key needed
-export LLM_API_KEY=your-api-key
-revhive review --file src/main.py   # real review
+pip install revhive-ai              # 1. 安装
+revhive demo                        # 2. 跑 Demo（无需 API Key）
+revhive review --file src/main.py   # 3. 真实审查（需要 API Key）
 ```
 
 **Option B: Docker**

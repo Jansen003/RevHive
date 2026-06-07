@@ -3,10 +3,13 @@
 Default backend: MiMo (https://api.xiaomimimo.com/v1).
 """
 
+import asyncio
 import importlib.util
 import json
 import logging
 import os
+import random
+import re
 import glob
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -46,12 +49,19 @@ _AGENT_CLASSES: dict[str, type] = {
 }
 
 
-def load_plugins(plugin_dir: str = "plugins") -> dict[str, type]:
+def load_plugins(plugin_dir: str = "plugins", allowed_plugins: Optional[set[str]] = None) -> dict[str, type]:
     """Load custom agent plugins from a directory.
 
     Each .py file in *plugin_dir* can define an agent class that extends
     :class:`BaseReviewAgent`. The class must be named ``Agent`` or have
     a ``PLUGIN_NAME`` attribute specifying the registry name.
+
+    Args:
+        plugin_dir: Directory to scan for plugin files.
+        allowed_plugins: Whitelist of plugin names to load. If provided,
+            only plugins whose name (stem or PLUGIN_NAME) is in this set
+            will be loaded. Pass ``None`` to load all plugins (legacy
+            behaviour). An empty set means load nothing.
 
     Returns a dict mapping plugin names to agent classes.
     """
@@ -63,6 +73,13 @@ def load_plugins(plugin_dir: str = "plugins") -> dict[str, type]:
     for py_file in plugin_path.glob("*.py"):
         if py_file.name.startswith("_"):
             continue
+
+        # Whitelist check: skip plugins not in the allowed set.
+        stem_name = py_file.stem
+        if allowed_plugins is not None and stem_name not in allowed_plugins:
+            logger.debug("Skipping plugin %s (not in allowed_plugins whitelist)", py_file)
+            continue
+
         try:
             spec = importlib.util.spec_from_file_location(f"plugin_{py_file.stem}", py_file)
             if spec is None or spec.loader is None:
@@ -82,6 +99,10 @@ def load_plugins(plugin_dir: str = "plugins") -> dict[str, type]:
 
             if agent_cls is not None:
                 name = getattr(agent_cls, "PLUGIN_NAME", py_file.stem)
+                # Double-check the resolved name against whitelist.
+                if allowed_plugins is not None and name not in allowed_plugins:
+                    logger.debug("Skipping plugin %s (name '%s' not in allowed_plugins)", py_file, name)
+                    continue
                 plugins[name] = agent_cls
                 logger.info("Loaded plugin agent: %s from %s", name, py_file)
         except Exception as exc:
@@ -121,15 +142,24 @@ class CodeReviewWorkflow:
 
     def __init__(self, model: Optional[str] = None, config: Optional[RevHiveConfig] = None, plugin_dir: str = "plugins",
                  api_key: Optional[str] = None, base_url: Optional[str] = None,
-                 enabled_agents: Optional[list[str]] = None):
+                 enabled_agents: Optional[list[str]] = None,
+                 allow_plugins: bool = False,
+                 max_concurrent_agents: Optional[int] = None):
         self.config = config or load_config()
         _api_key = api_key or os.getenv("LLM_API_KEY")
         _base_url = base_url or os.getenv("LLM_BASE_URL", "https://api.xiaomimimo.com/v1")
 
-        # Load built-in + plugin agents
+        # Concurrency control: config > explicit param > default 3.
+        _max_concurrent = max_concurrent_agents or getattr(self.config, "max_concurrent_agents", 3) or 3
+        self._semaphore = asyncio.Semaphore(_max_concurrent)
+        logger.info("Concurrency limit: %d agents", _max_concurrent)
+
+        # Load built-in + plugin agents (with whitelist if allow_plugins is set).
         all_agents = dict(_AGENT_CLASSES)
-        plugins = load_plugins(plugin_dir)
-        all_agents.update(plugins)
+        if allow_plugins:
+            allowed_names = getattr(self.config, "allowed_plugins", None)
+            plugins = load_plugins(plugin_dir, allowed_plugins=allowed_names)
+            all_agents.update(plugins)
         _model = model or self.config.model or os.getenv("LLM_MODEL", "mimo-v2.5-pro")
 
         common_kwargs = {"model": _model, "api_key": _api_key, "base_url": _base_url, "request_timeout": 120}
@@ -184,16 +214,38 @@ class CodeReviewWorkflow:
         return _run
 
     async def _safe_review(self, agent, state: ReviewState) -> AgentResult:
-        """Run a single agent review, returning a failure result on exception
-        rather than crashing the entire workflow."""
-        try:
-            return await agent.review(state.code, state.file_path)
-        except Exception as exc:
-            logger.exception("%s failed: %s", agent.name, exc)
-            return AgentResult(
-                agent_name=agent.name,
-                summary=f"Agent error: {exc}",
-            )
+        """Run a single agent review with concurrency control and retry logic.
+
+        Uses an asyncio.Semaphore to limit concurrent LLM calls, and
+        implements exponential backoff with jitter on transient failures.
+        """
+        max_retries = 3
+        base_delay = 1.0
+
+        async with self._semaphore:
+            for attempt in range(max_retries):
+                try:
+                    return await agent.review(state.code, state.file_path)
+                except Exception as exc:
+                    exc_str = str(exc).lower()
+                    is_transient = any(kw in exc_str for kw in (
+                        "rate limit", "timeout", "429", "503", "502", "500",
+                        "connection", "temporary", "overloaded",
+                    ))
+                    if is_transient and attempt < max_retries - 1:
+                        delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
+                        logger.warning(
+                            "%s transient error (attempt %d/%d), retrying in %.1fs: %s",
+                            agent.name, attempt + 1, max_retries, delay, exc,
+                        )
+                        await asyncio.sleep(delay)
+                        continue
+
+                    logger.exception("%s failed: %s", agent.name, exc)
+                    return AgentResult(
+                        agent_name=agent.name,
+                        summary=f"Agent error: {exc}",
+                    )
 
     async def _run_coordinate(self, state: ReviewState) -> dict:
         """Collect results from all enabled agents and synthesize."""
@@ -218,9 +270,17 @@ class CodeReviewWorkflow:
 
     @staticmethod
     def _validate_diff_ref(diff_ref: str) -> None:
-        """Validate that diff_ref contains only safe characters for git."""
-        import re
-        if '..' in diff_ref or not re.match(r'^[a-zA-Z0-9._/~^:-]+$', diff_ref):
+        """Validate that diff_ref contains only safe characters for git.
+
+        Allowed patterns:
+        - ``HEAD~N`` (e.g. HEAD~1, HEAD~3)
+        - Full 40-character hex commit SHA
+        - Branch name (alphanumeric, underscores, hyphens, slashes)
+
+        Raises ``ValueError`` if the reference doesn't match.
+        """
+        pattern = r'^(HEAD~\d+|[a-f0-9]{40}|[a-zA-Z0-9_/-]+)$'
+        if not re.match(pattern, diff_ref):
             raise ValueError(f"Invalid diff reference: {diff_ref}")
 
     async def run_from_diff(self, diff_ref: str) -> AgentResult:

@@ -57,6 +57,8 @@ class RevHiveConfig:
     model: Optional[str] = None
     agents: dict[str, AgentConfig] = field(default_factory=dict)
     ignore: list[str] = field(default_factory=list)
+    max_concurrent_agents: int = 3
+    allowed_plugins: Optional[set[str]] = None
 
     # ---- helpers ----
 
@@ -192,7 +194,22 @@ def load_config(path: Optional[str | Path] = None) -> RevHiveConfig:
     if isinstance(raw_ignore, list):
         ignore = [str(p) for p in raw_ignore]
 
-    cfg = RevHiveConfig(model=model, agents=agents, ignore=ignore)
+    # Parse concurrency limit
+    max_concurrent_agents = int(raw.get("max_concurrent_agents", 3))
+
+    # Parse allowed plugins whitelist
+    allowed_plugins: Optional[set[str]] = None
+    raw_plugins = raw.get("allowed_plugins")
+    if isinstance(raw_plugins, list):
+        allowed_plugins = set(raw_plugins)
+
+    cfg = RevHiveConfig(
+        model=model,
+        agents=agents,
+        ignore=ignore,
+        max_concurrent_agents=max_concurrent_agents,
+        allowed_plugins=allowed_plugins,
+    )
     _config_cache = cfg
     _config_cache_path = resolved
     return cfg

@@ -13,6 +13,8 @@ from revhive.graph.workflow import CodeReviewWorkflow, ReviewReport
 
 logger = logging.getLogger(__name__)
 
+_DEFAULT_MAX_FILE_SIZE = 1 * 1024 * 1024  # 1 MB
+
 
 @click.group()
 @click.version_option(version=__version__)
@@ -30,6 +32,34 @@ def _run_with_timeout(coro, timeout: int = 600):
         sys.exit(1)
 
 
+def _validate_file_path(file_path: str, allow_outside_cwd: bool = False) -> Path:
+    """Validate and normalize a file path, preventing directory traversal.
+
+    Args:
+        file_path: The user-provided file path.
+        allow_outside_cwd: If False (default), restrict access to the
+            current working directory and its subdirectories.
+
+    Returns:
+        Resolved absolute Path.
+
+    Raises:
+        click.BadParameter: If the path escapes the CWD sandbox.
+    """
+    resolved = Path(file_path).resolve()
+    if not allow_outside_cwd:
+        cwd = Path.cwd().resolve()
+        try:
+            resolved.relative_to(cwd)
+        except ValueError:
+            raise click.BadParameter(
+                f"Access denied: '{file_path}' is outside the current working directory. "
+                f"Use --allow-outside-cwd to override.",
+                param_hint="--file",
+            )
+    return resolved
+
+
 @cli.command()
 @click.option("--file", "-f", type=click.Path(exists=True), help="Path to file for review")
 @click.option("--diff", "-d", "diff_ref", help="Git diff reference (e.g., HEAD~1)")
@@ -37,27 +67,42 @@ def _run_with_timeout(coro, timeout: int = 600):
 @click.option("--output", "-o", type=click.Path(), help="Output file path")
 @click.option("--format", "fmt", type=click.Choice(["markdown", "json"]), default="markdown")
 @click.option("--timeout", "-t", default=600, type=int, help="Review timeout in seconds")
-def review(file: str, diff_ref: str, model: str, output: str, fmt: str, timeout: int):
+@click.option("--max-file-size", default=None, type=int,
+              help="Max file size in bytes (default: 1MB). Files larger than this are skipped.")
+@click.option("--allow-outside-cwd", is_flag=True, default=False,
+              help="Allow reading files outside the current working directory.")
+@click.option("--allow-plugins", is_flag=True, default=False,
+              help="Allow loading plugin agents from the plugins directory.")
+def review(file: str, diff_ref: str, model: str, output: str, fmt: str, timeout: int,
+           max_file_size: int, allow_outside_cwd: bool, allow_plugins: bool):
     """Run code review on a file or git diff."""
     cfg = load_config()
+    file_size_limit = max_file_size or _DEFAULT_MAX_FILE_SIZE
 
     try:
         if file:
             if cfg.should_ignore(file):
                 click.echo(f"Skipping {file} — matches ignore pattern in .revhive.yml")
                 return
+            file_path = _validate_file_path(file, allow_outside_cwd)
             try:
-                code = Path(file).read_text(encoding="utf-8")
+                if file_path.stat().st_size > file_size_limit:
+                    click.echo(
+                        f"Error: {file} exceeds the {file_size_limit // (1024 * 1024)}MB file size limit.",
+                        err=True,
+                    )
+                    sys.exit(1)
+                code = file_path.read_text(encoding="utf-8")
             except UnicodeDecodeError:
                 click.echo(f"Error: {file} is not a valid text file (encoding issue).", err=True)
                 sys.exit(1)
             except (PermissionError, OSError) as exc:
                 click.echo(f"Error: cannot read {file}: {exc}", err=True)
                 sys.exit(1)
-            workflow = CodeReviewWorkflow(model=model, config=cfg)
-            result = _run_with_timeout(workflow.run(code=code, file_path=file), timeout=timeout)
+            workflow = CodeReviewWorkflow(model=model, config=cfg, allow_plugins=allow_plugins)
+            result = _run_with_timeout(workflow.run(code=code, file_path=str(file_path)), timeout=timeout)
         elif diff_ref:
-            workflow = CodeReviewWorkflow(model=model, config=cfg)
+            workflow = CodeReviewWorkflow(model=model, config=cfg, allow_plugins=allow_plugins)
             result = _run_with_timeout(workflow.run_from_diff(diff_ref), timeout=timeout)
         else:
             click.echo("Please specify --file or --diff to review.")

@@ -18,6 +18,19 @@ except ImportError:
     HAS_ANTHROPIC = False
 
 
+def _mask_api_key(api_key: str) -> str:
+    """Return a masked version of the API key for safe display.
+
+    Shows only the first 4 characters followed by ``****``.
+    Returns ``****`` if the key is shorter than 4 characters.
+    """
+    if not api_key:
+        return "****"
+    if len(api_key) <= 4:
+        return "****"
+    return api_key[:4] + "****"
+
+
 def create_llm_client(
     api_key: str,
     base_url: Optional[str] = None,

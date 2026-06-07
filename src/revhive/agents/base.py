@@ -13,6 +13,23 @@ from langchain_core.messages import SystemMessage, HumanMessage
 logger = logging.getLogger(__name__)
 
 
+def _estimate_token_count(text: str) -> int:
+    """Estimate token count from text length.
+
+    Heuristic:
+    - Chinese characters: ~2 tokens each
+    - English words: ~1.3 tokens each (rounded up)
+    - Mixed: count CJK chars separately, then split remaining by whitespace.
+    """
+    if not text:
+        return 0
+    cjk_count = sum(1 for ch in text if '\u4e00' <= ch <= '\u9fff')
+    # Remove CJK chars, count remaining words
+    remaining = re.sub(r'[\u4e00-\u9fff]', ' ', text)
+    word_count = len(remaining.split())
+    return int(cjk_count * 2 + word_count * 1.3)
+
+
 class Severity(Enum):
     """Ordered severity levels for review findings."""
 
@@ -128,11 +145,17 @@ class BaseReviewAgent(ABC):
                     )
                     for f in result.findings
                 ]
+                # Estimate token usage from prompt + response text lengths
+                prompt_text = system_prompt + human_prompt
+                response_text = result.summary or ""
+                for f in result.findings:
+                    response_text += " " + f.title + " " + f.description
+                estimated_tokens = _estimate_token_count(prompt_text) + _estimate_token_count(response_text)
                 return AgentResult(
                     agent_name=self.name,
                     findings=findings,
                     summary=result.summary or self._auto_summary(findings),
-                    token_usage=0,  # structured output doesn't always return token info
+                    token_usage=estimated_tokens,
                 )
             except Exception as exc:
                 logger.warning("%s: structured output failed for %s, falling back to regex: %s",
@@ -142,9 +165,10 @@ class BaseReviewAgent(ABC):
         try:
             response = await self.llm.ainvoke(messages)
         except Exception as exc:
+            from revhive.utils.llm_client import _mask_api_key
             safe_msg = str(exc)
             if self._api_key:
-                safe_msg = safe_msg.replace(self._api_key, "***")
+                safe_msg = safe_msg.replace(self._api_key, _mask_api_key(self._api_key))
             logger.error("%s: LLM call failed for %s: %s", self.name, file_path, safe_msg)
             return AgentResult(
                 agent_name=self.name,
@@ -156,11 +180,16 @@ class BaseReviewAgent(ABC):
         for f in findings:
             if not f.file_path and file_path:
                 f.file_path = file_path
+        # Use response metadata if available, otherwise estimate from text
+        token_usage = response.response_metadata.get("token_usage", {}).get("total_tokens", 0)
+        if not token_usage:
+            prompt_text = system_prompt + human_prompt
+            token_usage = _estimate_token_count(prompt_text) + _estimate_token_count(response.content)
         return AgentResult(
             agent_name=self.name,
             findings=findings,
             summary=self._extract_summary(response.content, findings),
-            token_usage=response.response_metadata.get("token_usage", {}).get("total_tokens", 0),
+            token_usage=token_usage,
         )
 
     def _build_human_prompt(self, code: str, file_path: str) -> str:

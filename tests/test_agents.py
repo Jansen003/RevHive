@@ -264,8 +264,29 @@ def test_coordinator_risk_score():
             "XML parser vulnerable to billion laughs denial of service attack",
             "Redirect URL not validated enabling open redirect phishing attacks",
         ]
+        # Use distinct titles so dedup doesn't merge them
+        titles = [
+            "Shell injection via subprocess",
+            "SQL concatenation vulnerability",
+            "Unused import statement",
+            "Race condition in goroutine map",
+            "Hardcoded AWS secret key",
+            "Resource leak unclosed descriptor",
+            "Off-by-one array index error",
+            "Weak MD5 password hash",
+            "Missing HTTP request timeout",
+            "Inconsistent camelCase naming",
+            "N+1 query missing select_related",
+            "Deprecated logging.warn usage",
+            "Redis cache key collision",
+            "JWT expiry not validated",
+            "CORS wildcard origin",
+            "Log injection unsanitized input",
+            "Billion laughs XML DoS",
+            "Open redirect URL validation",
+        ]
         return [
-            ReviewFinding(agent="Test", severity=s, title=f"Unique finding {i} about {s.value} issue", description=descs[i % len(descs)])
+            ReviewFinding(agent="Test", severity=s, title=titles[i], description=descs[i % len(descs)])
             for i, s in enumerate(severities)
         ]
 
